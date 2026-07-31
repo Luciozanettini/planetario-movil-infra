@@ -93,7 +93,7 @@ Después del primer `terraform apply` (Fase 1) exitoso, para activar Fase 2:
 ### 1. Verificar el mail de destino
 
 `terraform apply` va a disparar un mail real de verificación a `contact_email`
-(por defecto `juanpablozanettini@gmail.com`, ver `variables.tf`). **Alguien
+(por defecto `xxxxxxx@gmail.com`, ver `variables.tf`). **Alguien
 tiene que abrir ese mail y hacer clic en el link de confirmación** — sin eso,
 SES no va a poder enviar notificaciones a esa casilla mientras la cuenta
 esté en modo sandbox.
