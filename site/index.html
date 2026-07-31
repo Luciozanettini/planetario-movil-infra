@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planetario Móvil · Domo 360 — Fundación Planetarium, Mendoza</title>
+<meta name="description" content="El Planetario Móvil lleva una experiencia inmersiva de 360° a tu escuela. Funciones didácticas de astronomía y ciencias naturales para Nivel Inicial, Primario y Secundario en Mendoza.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c16;
+    --bg-elevated: #101a2e;
+    --bg-elevated-2: #16233c;
+    --gold: #e8b84b;
+    --cyan: #4fd8e0;
+    --text: #f2f4f8;
+    --text-muted: #8b97b5;
+    --line: rgba(139, 151, 181, 0.18);
+    --serif: 'Fraunces', serif;
+    --sans: 'Inter', sans-serif;
+    --mono: 'Space Mono', monospace;
+    --max-w: 1120px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Starfield background */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wrap {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  a { color: inherit; }
+
+  /* ---------- NAV ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(8, 12, 22, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  nav.wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+  }
+
+  .brand .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 12px 2px var(--gold);
+  }
+
+  .navlinks {
+    display: flex;
+    gap: 32px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .navlinks a {
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .navlinks a:hover, .navlinks a:focus-visible { color: var(--gold); }
+
+  .btn {
+    display: inline-block;
+    background: var(--gold);
+    color: #1a1305;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 11px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover, .btn:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px -8px rgba(232, 184, 75, 0.6);
+  }
+  .btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text);
+  }
+  .btn-ghost:hover, .btn-ghost:focus-visible {
+    border-color: var(--gold);
+    box-shadow: none;
+    color: var(--gold);
+  }
+
+  @media (max-width: 720px) {
+    .navlinks { display: none; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 96px 0 80px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--cyan);
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 4.6vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero p.lead {
+    margin-top: 22px;
+    font-size: 1.08rem;
+    color: var(--text-muted);
+    max-width: 46ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 28px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    color: var(--gold);
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Hero visual: dome illustration */
+  .hero-visual {
+    position: relative;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* ---------- SECTION BASE ---------- */
+  section {
+    padding: 88px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-head {
+    max-width: 640px;
+    margin-bottom: 52px;
+  }
+
+  .section-head h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    margin-top: 8px;
+  }
+
+  .section-head p {
+    color: var(--text-muted);
+    margin-top: 14px;
+  }
+
+  /* ---------- QUÉ ES (specs) ---------- */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .spec-card {
+    background: var(--bg-elevated);
+    padding: 28px 22px;
+  }
+  .spec-card .num {
+    font-family: var(--mono);
+    font-size: 1.8rem;
+    color: var(--cyan);
+  }
+  .spec-card .label {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 800px) {
+    .specs-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero { grid-template-columns: 1fr; }
+    .hero-visual { max-width: 340px; margin: 0 auto; order: -1; }
+  }
+
+  /* ---------- TEMÁTICAS ---------- */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .topic-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .topic-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .topic-card h3 {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--gold);
+  }
+  .topic-card p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 800px) {
+    .topics-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px) {
+    .topics-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- TRAYECTORIA (constellation timeline — signature element) ---------- */
+  .timeline {
+    position: relative;
+    padding-left: 8px;
+  }
+  .timeline svg.connector {
+    position: absolute;
+    left: 11px;
+    top: 12px;
+    bottom: 12px;
+    width: 2px;
+    height: calc(100% - 24px);
+  }
+  .timeline-item {
+    position: relative;
+    padding-left: 48px;
+    padding-bottom: 44px;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 0 4px var(--bg), 0 0 14px 1px rgba(232,184,75,0.5);
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 20px;
+    bottom: -44px;
+    width: 2px;
+    background: var(--line);
+  }
+  .timeline-item:last-child::before { display: none; }
+
+  .timeline-year {
+    font-family: var(--mono);
+    color: var(--cyan);
+    font-size: 0.9rem;
+  }
+  .timeline-item h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.15rem;
+    margin-top: 4px;
+  }
+  .timeline-item p {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 0.94rem;
+    max-width: 60ch;
+  }
+
+  /* ---------- EQUIPO ---------- */
+  .team-note {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .team-note .quote-mark {
+    font-family: var(--serif);
+    font-size: 3rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .team-note p { color: var(--text-muted); max-width: 68ch; }
+  .team-note strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- CONTACTO ---------- */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 48px;
+  }
+  @media (max-width: 800px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .specs-grid { grid-template-columns: repeat(2,1fr); }
+  }
+
+  .contact-info h2 { font-family: var(--serif); font-size: 1.9rem; font-weight: 600; }
+  .contact-info p { color: var(--text-muted); margin-top: 14px; max-width: 42ch; }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+    font-size: 0.95rem;
+  }
+  .contact-item .ic {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--bg-elevated-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--cyan);
+    flex-shrink: 0;
+  }
+
+  form {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 7px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 11px 13px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.94rem;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(79, 216, 224, 0.15);
+  }
+  .field textarea { resize: vertical; min-height: 90px; }
+
+  .form-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 14px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 0;
+  }
+  footer .wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer p { font-size: 0.82rem; color: var(--text-muted); }
+
+  /* Reduced motion respect */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<header>
+  <nav class="wrap">
+    <div class="brand"><span class="dot"></span> Planetario Móvil · Domo 360</div>
+    <div class="navlinks">
+      <a href="#que-es">Qué es</a>
+      <a href="#tematicas">Temáticas</a>
+      <a href="#trayectoria">Trayectoria</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <a href="#contacto" class="btn">Pedir presupuesto</a>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" style="border-top:none; padding-top:64px;">
+    <div class="wrap" style="display:contents;">
+      <div>
+        <div class="eyebrow">Fundación Planetarium · Mendoza</div>
+        <h1>El universo entra<br> al aula, <em>sin moverse</em><br> de la escuela.</h1>
+        <p class="lead">
+          Un domo inflable de 8 metros de diámetro transforma cualquier salón en una experiencia de proyección de 360°. Funciones didácticas de astronomía y ciencias naturales, pensadas para Nivel Inicial, Primario y Secundario.
+        </p>
+        <div class="hero-actions">
+          <a href="#contacto" class="btn">Pedir presupuesto</a>
+          <a href="#que-es" class="btn btn-ghost">Cómo funciona</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">20+</div>
+            <div class="stat-label">años de trayectoria</div>
+          </div>
+          <div>
+            <div class="stat-num">360°</div>
+            <div class="stat-label">proyección envolvente</div>
+          </div>
+          <div>
+            <div class="stat-num">30–60</div>
+            <div class="stat-label">alumnos por función</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <svg viewBox="0 0 400 400" width="100%" height="100%" role="img" aria-label="Ilustración del domo del planetario bajo un cielo estrellado">
+          <defs>
+            <radialGradient id="domeGlow" cx="50%" cy="65%" r="60%">
+              <stop offset="0%" stop-color="#1b2a4a"/>
+              <stop offset="100%" stop-color="#080c16" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="230" r="160" fill="url(#domeGlow)"/>
+          <!-- Ground -->
+          <line x1="40" y1="300" x2="360" y2="300" stroke="#1c2a45" stroke-width="1"/>
+          <!-- Dome (half ellipse) -->
+          <path d="M 90 300 A 110 100 0 0 1 310 300" fill="#101a2e" stroke="#e8b84b" stroke-width="2"/>
+          <path d="M 90 300 A 110 100 0 0 1 310 300" fill="none" stroke="#e8b84b" stroke-width="1" opacity="0.35" transform="translate(0,-6) scale(0.94)" transform-origin="200 300"/>
+          <!-- Dome base -->
+          <rect x="80" y="298" width="240" height="14" rx="7" fill="#16233c" stroke="#1c2a45"/>
+          <!-- Constellation lines/stars -->
+          <g stroke="#4fd8e0" stroke-width="1" opacity="0.7">
+            <line x1="120" y1="90" x2="160" y2="60"/>
+            <line x1="160" y1="60" x2="205" y2="75"/>
+            <line x1="205" y1="75" x2="250" y2="50"/>
+            <line x1="250" y1="50" x2="290" y2="95"/>
+          </g>
+          <g fill="#e8b84b">
+            <circle cx="120" cy="90" r="3"/>
+            <circle cx="160" cy="60" r="2.4"/>
+            <circle cx="205" cy="75" r="3.4"/>
+            <circle cx="250" cy="50" r="2.4"/>
+            <circle cx="290" cy="95" r="3"/>
+          </g>
+          <g fill="#f2f4f8" opacity="0.7">
+            <circle cx="60" cy="150" r="1.6"/>
+            <circle cx="340" cy="130" r="1.6"/>
+            <circle cx="340" cy="200" r="1.2"/>
+            <circle cx="55" cy="220" r="1.2"/>
+            <circle cx="200" cy="40" r="1.6"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUÉ ES -->
+  <section id="que-es">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Cómo funciona</div>
+        <h2>Una experiencia inmersiva, dentro de la propia escuela</h2>
+        <p>El Domo transportable se arma en un salón o aula adecuada de la institución, evitando riesgos y costos de traslado de los alumnos. Cuenta con circulación y renovación permanente de aire, y equipos de proyección específicos para ambos hemisferios.</p>
+      </div>
+      <div class="specs-grid">
+        <div class="spec-card">
+          <div class="num">4,20 m</div>
+          <div class="label">altura del domo</div>
+        </div>
+        <div class="spec-card">
+          <div class="num">8 m</div>
+          <div class="label">diámetro del domo</div>
+        </div>
+        <div class="spec-card">
+          <div class="num">30 min</div>
+          <div class="label">duración de cada función</div>
+        </div>
+        <div class="spec-card">
+          <div class="num">30–60</div>
+          <div class="label">alumnos por función</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMÁTICAS -->
+  <section id="tematicas">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Contenidos</div>
+        <h2>Astronomía y ciencias naturales, adaptadas a cada edad</h2>
+        <p>Las presentaciones combinan música, imágenes y proyecciones específicas, diseñadas según el nivel educativo del grupo.</p>
+      </div>
+      <div class="topics-grid">
+        <div class="topic-card">
+          <h3>Sistema Solar</h3>
+          <p>El Sol, los planetas y sus movimientos, explicados de forma visual y envolvente.</p>
+        </div>
+        <div class="topic-card">
+          <h3>La Luna y la Tierra</h3>
+          <p>Fases lunares, rotación, traslación y estaciones del año.</p>
+        </div>
+        <div class="topic-card">
+          <h3>Orientación estelar</h3>
+          <p>Cómo se usaron las estrellas y los puntos cardinales a lo largo de la historia.</p>
+        </div>
+        <div class="topic-card">
+          <h3>Dinosaurios</h3>
+          <p>Un recorrido por la vida prehistórica dentro del domo envolvente.</p>
+        </div>
+        <div class="topic-card">
+          <h3>Ciclo del agua</h3>
+          <p>Procesos naturales narrados con recursos audiovisuales inmersivos.</p>
+        </div>
+        <div class="topic-card">
+          <h3>Cuerpo humano</h3>
+          <p>Contenidos de ciencias naturales integrados a la currícula escolar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAYECTORIA -->
+  <section id="trayectoria">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Trayectoria</div>
+        <h2>Más de dos décadas llevando el cielo a las aulas</h2>
+        <p>La Fundación Planetarium es una entidad civil sin fines de lucro, autorizada por la Dirección de Personas Jurídicas.</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">2001</div>
+          <h3>Primeras presentaciones</h3>
+          <p>El Planetario Móvil inicia sus actividades en las muestras organizadas por Eureka – Parque de la Ciencia.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">2003</div>
+          <h3>Se funda la Fundación Planetarium</h3>
+          <p>Entidad civil sin fines de lucro, autorizada mediante Resolución n.º 00632/03, dedicada a la divulgación científica en escuelas de gestión pública y privada.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">Desde entonces</div>
+          <h3>Presencia en toda la provincia</h3>
+          <p>Participación en eventos junto al Municipio de Malargüe, el Museo Municipal de Arte Moderno, la Nave Cultural, el Espacio Cultural Julio Le Parc, el Auditorio Ángel Bustelo y el Museo de Ciencias Naturales J. Cornelio Moyano, entre otros.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">Hoy</div>
+          <h3>Funciones didácticas activas</h3>
+          <p>Visitas periódicas a escuelas de la región, acercando el conocimiento astronómico a la comunidad educativa mendocina.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EQUIPO -->
+  <section id="equipo">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Equipo</div>
+        <h2>Un proyecto interdisciplinario</h2>
+      </div>
+      <div class="team-note">
+        <div class="quote-mark">”</div>
+        <p>
+          Dirigido por <strong>Juan Pablo Zanettini</strong>, representante del proyecto, con más de veinte años de trayectoria en astronomía educativa. La Fundación reúne un equipo interdisciplinario con formación en administración pública, filosofía, artes, pedagogía y psicopedagogía — integrando el rigor científico con una mirada pedagógica integral.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <div class="wrap contact-grid">
+      <div class="contact-info">
+        <div class="eyebrow">Contacto</div>
+        <h2>Llevemos el domo a tu escuela</h2>
+        <p>Contanos de qué institución sos, cuántos alumnos y qué turno preferís, y te respondemos con la propuesta y disponibilidad.</p>
+
+        <div class="contact-item">
+          <span class="ic">☎</span> +54 261 609-0920
+        </div>
+        <div class="contact-item">
+          <span class="ic">✉</span> juanpablozanettini@gmail.com
+        </div>
+        <div class="contact-item">
+          <span class="ic">◎</span> Mendoza, Argentina
+        </div>
+      </div>
+
+      <form id="contact-form">
+        <div class="form-row">
+          <div class="field">
+            <label for="nombre">Nombre y apellido</label>
+            <input type="text" id="nombre" name="nombre" required>
+          </div>
+          <div class="field">
+            <label for="escuela">Institución / escuela</label>
+            <input type="text" id="escuela" name="escuela" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="localidad">Localidad</label>
+            <input type="text" id="localidad" name="localidad" required>
+          </div>
+          <div class="field">
+            <label for="nivel">Nivel educativo</label>
+            <select id="nivel" name="nivel">
+              <option>Inicial</option>
+              <option>Primario</option>
+              <option>Secundario</option>
+              <option>Varios niveles</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="telefono">Teléfono de contacto</label>
+            <input type="tel" id="telefono" name="telefono" required>
+          </div>
+          <div class="field">
+            <label for="alumnos">Cantidad estimada de alumnos</label>
+            <input type="number" id="alumnos" name="alumnos" min="1">
+          </div>
+        </div>
+        <div class="field">
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" placeholder="Contanos fecha tentativa, turno, cualquier detalle..."></textarea>
+        </div>
+        <button type="submit" class="btn" style="width:100%;">Enviar solicitud</button>
+        <p class="form-note">
+          * Al enviar, tu pedido queda guardado y le llega un aviso por mail a la Fundación.
+        </p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand" style="font-size:0.95rem;"><span class="dot"></span> Fundación Planetarium · Res. n.º 00632/03</div>
+    <p>© 2026 Planetario Móvil de Mendoza. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script>
+  // Starfield: fondo decorativo, respeta prefers-reduced-motion
+  (function () {
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = document.body.scrollHeight;
+      const count = Math.floor((canvas.width * canvas.height) / 9000);
+      stars = Array.from({ length: count }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.1 + 0.2,
+        a: Math.random() * 0.6 + 0.15,
+        speed: Math.random() * 0.15 + 0.02
+      }));
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#f2f4f8';
+      for (const s of stars) {
+        const twinkle = reduceMotion ? s.a : s.a + Math.sin(t / 1000 * s.speed * 10) * 0.15;
+        ctx.globalAlpha = Math.max(0, Math.min(1, twinkle));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (!reduceMotion) requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(draw);
+  })();
+
+  // Fase 2: el formulario ahora pega de verdad al backend (Lambda + API Gateway).
+  // IMPORTANTE: reemplazar este valor por el output "leads_api_endpoint"
+  // que te devuelve `terraform apply` después de crear la infraestructura.
+  const CONTACT_API_URL = "REEMPLAZAR_CON_TERRAFORM_OUTPUT_leads_api_endpoint";
+
+  document.getElementById('contact-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    try {
+      const res = await fetch(CONTACT_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) throw new Error('Respuesta no exitosa del servidor');
+
+      submitBtn.textContent = '¡Enviado! Te contactamos pronto';
+      form.reset();
+    } catch (err) {
+      submitBtn.textContent = 'Error al enviar. Intentá de nuevo';
+      submitBtn.disabled = false;
+      setTimeout(() => { submitBtn.textContent = originalText; }, 3000);
+    }
+  });
+</script>
+
+</body>
+</html>

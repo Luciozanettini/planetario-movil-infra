@@ -1,0 +1,14 @@
+# Copiá esto a backend.hcl y completá con el nombre real de TU bucket de state
+# (creado en el paso de bootstrap, ver README.md). Se usa así:
+#
+#   terraform init -backend-config=backend.hcl
+#
+# Por qué esto no está hardcodeado en providers.tf: el bloque backend "s3" {}
+# de Terraform no admite variables. Separar esta config permite tener
+# distintos backends (dev/prod) sin tocar el código del módulo.
+
+bucket         = "planetario-movil-tfstate-CAMBIAR-POR-ALGO-UNICO"
+key            = "hosting/terraform.tfstate"
+region         = "sa-east-1"
+dynamodb_table = "planetario-movil-tf-locks"
+encrypt        = true

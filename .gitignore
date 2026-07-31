@@ -1,0 +1,20 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Archivos con datos reales - solo se versionan los .example
+infra/terraform.tfvars
+infra/backend.hcl
+
+# Artefactos generados en cada build, no tiene sentido versionarlos
+lambda/*.zip
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
