@@ -792,7 +792,7 @@
   // Fase 2: el formulario ahora pega de verdad al backend (Lambda + API Gateway).
   // IMPORTANTE: reemplazar este valor por el output "leads_api_endpoint"
   // que te devuelve `terraform apply` después de crear la infraestructura.
-  const CONTACT_API_URL = "REEMPLAZAR_CON_TERRAFORM_OUTPUT_leads_api_endpoint";
+  const CONTACT_API_URL = "https://hrf2fdz634.execute-api.sa-east-1.amazonaws.com/leads";
 
   document.getElementById('contact-form').addEventListener('submit', async function (e) {
     e.preventDefault();
