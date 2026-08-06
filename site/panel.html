@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — Envío a escuelas | Planetario Móvil</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .panel {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #334155;
+    font-size: 1.1rem;
+  }
+  .fila:last-of-type { border-bottom: none; }
+  .numero { font-weight: bold; font-size: 1.3rem; }
+  .enviado .numero { color: #4ade80; }
+  .pendiente .numero { color: #fbbf24; }
+  .rebotado .numero { color: #f87171; }
+  .queja .numero { color: #f87171; }
+  .total {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #475569;
+    text-align: center;
+    font-size: 1rem;
+    color: #94a3b8;
+  }
+  .cargando { text-align: center; color: #94a3b8; }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <h1>📊 Estado del envío a escuelas</h1>
+    <div id="contenido" class="cargando">Cargando...</div>
+  </div>
+
+  <script>
+    const STATS_API_URL = "https://hrf2fdz634.execute-api.sa-east-1.amazonaws.com/stats";
+
+    fetch(STATS_API_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        document.getElementById("contenido").innerHTML = `
+          <div class="fila enviado"><span>✅ Enviados</span><span class="numero">${data.enviado}</span></div>
+          <div class="fila pendiente"><span>⏳ Pendientes</span><span class="numero">${data.pendiente}</span></div>
+          <div class="fila rebotado"><span>❌ Rebotados</span><span class="numero">${data.rebotado}</span></div>
+          <div class="fila queja"><span>🚫 Bajas/quejas</span><span class="numero">${data.queja}</span></div>
+          <div class="total">Total: ${data.total} escuelas</div>
+        `;
+      })
+      .catch(() => {
+        document.getElementById("contenido").innerHTML =
+          '<p style="text-align:center;color:#f87171;">No se pudo cargar la información. Intentá de nuevo más tarde.</p>';
+      });
+  </script>
+</body>
+</html>
