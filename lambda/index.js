@@ -14,7 +14,7 @@ const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 const ses = new SESClient({});
 
-const REQUIRED_FIELDS = ["nombre", "escuela", "localidad", "telefono"];
+const REQUIRED_FIELDS = ["nombre", "escuela", "localidad", "telefono", "email"];
 
 function jsonResponse(statusCode, body) {
   return {
@@ -52,6 +52,7 @@ exports.handler = async (event) => {
     localidad: data.localidad,
     nivel: data.nivel || "No especificado",
     telefono: data.telefono,
+    email: data.email,
     alumnos: data.alumnos || null,
     mensaje: data.mensaje || "",
     estado: "pendiente", // útil para el futuro panel de gestión (Fase 4)
@@ -80,6 +81,7 @@ exports.handler = async (event) => {
     await ses.send(
       new SendEmailCommand({
         Source: process.env.SENDER_EMAIL,
+        ReplyToAddresses: [lead.email],
         Destination: { ToAddresses: [process.env.RECIPIENT_EMAIL] },
         Message: {
           Subject: { Data: `Nuevo pedido de presupuesto - ${lead.escuela}` },
