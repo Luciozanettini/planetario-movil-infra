@@ -2,7 +2,8 @@
 # terraform.tfvars NO debería subirse a git si en el futuro tiene datos sensibles;
 # acá no los tiene, pero es buen hábito agregarlo a .gitignore igual.
 
-domain_name   = "planetariomendoza.com.ar"
-project_name  = "planetario-movil"
-aws_region    = "sa-east-1"
-contact_email = "juanpablozanettini@gmail.com"
+domain_name         = "planetariomendoza.com.ar"
+project_name        = "planetario-movil"
+aws_region          = "sa-east-1"
+contact_email       = "tu-mail@ejemplo.com"
+billing_alert_email = "tu-mail@ejemplo.com"
